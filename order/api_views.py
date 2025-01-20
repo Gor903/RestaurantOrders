@@ -11,7 +11,6 @@ from .serializers import (
 )
 from .choices import ORDER_STATUS
 
-
 @swagger_auto_schema(
     manual_parameters=[
         openapi.Parameter(
@@ -19,17 +18,29 @@ from .choices import ORDER_STATUS
             openapi.IN_QUERY,
             type=openapi.TYPE_STRING,
             enum=[i[0] for i in ORDER_STATUS],
+            description="Filter orders by status (e.g., 'Pending', 'Ready', 'Paid').",
         ),
         openapi.Parameter(
             "table_number",
             openapi.IN_QUERY,
             type=openapi.TYPE_INTEGER,
+            description="Filter orders by table number.",
         ),
     ],
     methods=["get"],
 )
 @api_view(["GET"])
 def get_orders(request):
+    """
+    Retrieve a list of orders, optionally filtered by status or table number.
+
+    Query Parameters:
+        - `status` (str): Filter orders by their status.
+        - `table_number` (int): Filter orders by their table number.
+
+    Returns:
+        Response: A JSON array of orders matching the filters, serialized using the `OrderSerializer`.
+    """
     orders = Order.objects.all()
     if status := request.query_params.get("status"):
         orders = orders.filter(status=status)
@@ -41,6 +52,16 @@ def get_orders(request):
 
 @api_view(["GET"])
 def get_order(request, id):
+    """
+    Retrieve the details of a single order by its ID.
+
+    Parameters:
+        - `id` (UUID): The unique identifier of the order.
+
+    Returns:
+        Response: A JSON object containing the order details, serialized using the `OrderSerializer`.
+                  Returns a 404 status if the order is not found.
+    """
     order = Order.objects.filter(id=id).first()
     if not order:
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -49,15 +70,23 @@ def get_order(request, id):
 
 
 @swagger_auto_schema(
-    operation_description="Create a new order",
+    operation_description="Create a new order.",
     request_body=OrderCreateSerializer,
     methods=["post"],
 )
 @api_view(["POST"])
 def create_order(request):
-    serializer = OrderCreateSerializer(
-        data=request.data,
-    )
+    """
+    Create a new order.
+
+    Request Body:
+        - A JSON object containing the required fields for an order, validated by `OrderCreateSerializer`.
+
+    Returns:
+        Response: A JSON object of the created order with a 201 status on success.
+                  Returns a 400 status if validation fails.
+    """
+    serializer = OrderCreateSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
         return Response(
@@ -71,15 +100,26 @@ def create_order(request):
 
 
 @swagger_auto_schema(
-    operation_description="Update an order",
+    operation_description="Update an order.",
     request_body=OrderSerializer,
     methods=["patch"],
 )
 @api_view(["PATCH"])
 def update_order(request, id):
-    order = Order.objects.filter(
-        id=id,
-    ).first()
+    """
+    Update an existing order by its ID.
+
+    Parameters:
+        - `id` (UUID): The unique identifier of the order.
+
+    Request Body:
+        - A JSON object containing the fields to update, validated by `OrderSerializer`.
+
+    Returns:
+        Response: A JSON object of the updated order with a 201 status on success.
+                  Returns a 404 status if the order is not found or a 400 status if validation fails.
+    """
+    order = Order.objects.filter(id=id).first()
     if not order:
         return Response(status=status.HTTP_404_NOT_FOUND)
     serializer = OrderSerializer(
@@ -101,6 +141,16 @@ def update_order(request, id):
 
 @api_view(["DELETE"])
 def delete_order(request, id):
+    """
+    Delete an order by its ID.
+
+    Parameters:
+        - `id` (UUID): The unique identifier of the order.
+
+    Returns:
+        Response: A success message if the order is deleted successfully.
+                  Returns a 404 status if the order is not found.
+    """
     order = Order.objects.filter(id=id).first()
     if not order:
         return Response(status=status.HTTP_404_NOT_FOUND)
