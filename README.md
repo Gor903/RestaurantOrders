@@ -63,3 +63,8 @@ Go to http://localhost:8000/admin to access the Django admin panel. Log in with 
  - Order delete
  - Order List
  - Order detail
+
+### Run Unittests
+```bash
+    python manage.py test
+```
