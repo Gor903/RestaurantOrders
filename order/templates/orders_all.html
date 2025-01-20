@@ -1,43 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orders</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        select,
+        input[type="number"],
+        button {
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            background-color: #5cb85c;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #4cae4c;
+        }
+
+        hr {
+            margin-top: 30px;
+            border: 0;
+            border-top: 2px solid #ddd;
+        }
+
+        .order-list {
+            margin-top: 20px;
+        }
+
+        .order-list p {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .order-list a {
+            color: #5cb85c;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .order-list a:hover {
+            text-decoration: underline;
+        }
+
+        .form-section {
+            margin-top: 30px;
+        }
+
+        .form-section h2 {
+            font-size: 1.5rem;
+            color: #333;
+        }
+    </style>
 </head>
+
 <body>
-     <form method="get" action="{% url 'orders_all' %}">
-        <label for="status">Filter by Status:</label>
-        <select id="status" name="status">
-            <option value="">All</option>
-            {% for status in order_status %}
-                <option value={{ status }}>{{ status }}</option>
+
+    <header>
+        <h1>Orders Management</h1>
+    </header>
+
+    <div class="container">
+
+        <!-- Filter by Status Form -->
+        <div class="form-section">
+            <h2>Filter Orders</h2>
+            <form method="get" action="{% url 'orders_all' %}">
+                <label for="status">Filter by Status:</label>
+                <select id="status" name="status">
+                    <option value="">All</option>
+                    {% for status in order_status %}
+                    <option value="{{ status }}">{{ status }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Search</button>
+            </form>
+        </div>
+
+        <!-- Filter by Table Number Form -->
+        <div class="form-section">
+            <form method="get" action="{% url 'orders_all' %}">
+                <label for="table-number">Table Number:</label>
+                <input type="number" id="table-number" name="table_number" required placeholder="Enter table number">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+
+        <hr>
+
+        <!-- Orders List -->
+        <h1>All Orders</h1>
+        <div class="order-list">
+            {% for order in orders %}
+            <div>
+                <p><strong>Table number:</strong> {{ order.table_number }}</p>
+                <p><strong>Status:</strong> {{ order.status }}</p>
+                <a href="{% url 'order_detail' order_id=order.id %}">View Details</a>
+            </div>
+            <hr>
             {% endfor %}
-        </select>
-        <button type="submit">Search</button>
-     </form>
-     <br>
-     <form method="get" action="{% url 'orders_all' %}">
-        <label for="table-number">Table Number:</label>
-        <input type="number" id="table-number" name="table_number" required>
-        <button type="submit">Search</button>
-    </form>
-    <hr>
-    <h1>Orders</h1>
-    <div>
-        {% for order in orders %}
-            <p><strong>Table number:</strong> {{ order.table_number }}</p>
-            <p><strong>Status:</strong> {{ order.status }}</p>
-            <a href="{% url 'order_detail' order_id=order.id %}">Detail</a>
-        {% endfor %}
+        </div>
+
+        <hr>
+
+        <!-- Create Order Form -->
+        <div class="form-section">
+            <h2>Create New Order</h2>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Save Order</button>
+            </form>
+        </div>
+
     </div>
 
-    <hr>
-    <h1>Create Order</h1>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save Order</button>
-    </form>
 </body>
+
 </html>
