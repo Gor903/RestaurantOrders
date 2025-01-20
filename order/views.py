@@ -1,4 +1,6 @@
 import json
+from datetime import datetime
+
 from django.shortcuts import render
 from django.views import View
 from .forms import OrderForm
@@ -76,6 +78,19 @@ class OrderView(View):
         """
         order = OrderForm(request.POST)
         if order.is_valid():
+            start = order.cleaned_data["start"]
+            until = order.cleaned_data["until"]
+
+            overlapping_order = Order.objects.filter(
+                start__lt=until
+            ).filter(
+                until__gt=start,
+            ).first()
+
+            if overlapping_order:
+                return self.get(
+                    request=request,
+                )
             order.save()
         return self.get(
             request=request,

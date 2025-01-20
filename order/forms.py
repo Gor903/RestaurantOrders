@@ -22,7 +22,7 @@ class OrderForm(forms.ModelForm):
 
     class Meta:
         model = Order
-        fields = ["table_number", "items"]
+        fields = ["table_number", "items", "start", "until"]
         widgets = {
             "items": forms.CheckboxSelectMultiple(),
         }

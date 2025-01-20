@@ -88,6 +88,20 @@ def create_order(request):
     """
     serializer = OrderCreateSerializer(data=request.data)
     if serializer.is_valid():
+        start = serializer.validated_data["start"]
+        until = serializer.validated_data["until"]
+
+        overlapping_order = Order.objects.filter(
+            start__lt=until
+        ).filter(
+            until__gt=start
+        ).first()
+
+        if overlapping_order:
+            return Response(
+                data={"detail": "There is an overlapping order in this time range."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         serializer.save()
         return Response(
             serializer.data,
@@ -128,6 +142,25 @@ def update_order(request, id):
         partial=True,
     )
     if serializer.is_valid():
+        overlapping_order = Order.objects.all()
+        print(overlapping_order)
+        if until := serializer.validated_data.get("until"):
+            overlapping_order = overlapping_order.filter(
+                start__lt=until
+            )
+        print(overlapping_order)
+
+        if start := serializer.validated_data.get("start"):
+            overlapping_order = overlapping_order.filter(
+                until__lt=start
+            )
+        print(overlapping_order)
+
+        if overlapping_order:
+            return Response(
+                data={"detail": "There is an overlapping order in this time range."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         serializer.save()
         return Response(
             serializer.data,

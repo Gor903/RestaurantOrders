@@ -43,6 +43,8 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         fields = [
             "table_number",
             "items",
+            "start",
+            "until",
         ]
 
 
@@ -63,6 +65,8 @@ class OrderSerializer(OrderCreateSerializer):
             "table_number",
             "items",
             "status",
+            "start",
+            "until",
         ]
 
     def update(self, obj, validated_data):

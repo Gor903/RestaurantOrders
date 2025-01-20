@@ -44,7 +44,6 @@ class Order(BaseModel):
 
     table_number = models.IntegerField(
         validators=[MinValueValidator(1)],
-        unique=True,
         null=False,
     )
     items = models.ManyToManyField(
@@ -57,6 +56,12 @@ class Order(BaseModel):
         null=False,
         blank=False,
         default="Pending",
+    )
+    start = models.DateTimeField(
+        null=False,
+    )
+    until = models.DateTimeField(
+        null=False,
     )
 
     @property
