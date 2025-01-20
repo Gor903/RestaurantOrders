@@ -11,6 +11,7 @@ from .serializers import (
 )
 from .choices import ORDER_STATUS
 
+
 @swagger_auto_schema(
     manual_parameters=[
         openapi.Parameter(
@@ -91,11 +92,9 @@ def create_order(request):
         start = serializer.validated_data["start"]
         until = serializer.validated_data["until"]
 
-        overlapping_order = Order.objects.filter(
-            start__lt=until
-        ).filter(
-            until__gt=start
-        ).first()
+        overlapping_order = (
+            Order.objects.filter(start__lt=until).filter(until__gt=start).first()
+        )
 
         if overlapping_order:
             return Response(
@@ -143,18 +142,10 @@ def update_order(request, id):
     )
     if serializer.is_valid():
         overlapping_order = Order.objects.all()
-        print(overlapping_order)
         if until := serializer.validated_data.get("until"):
-            overlapping_order = overlapping_order.filter(
-                start__lt=until
-            )
-        print(overlapping_order)
-
+            overlapping_order = overlapping_order.filter(start__lt=until)
         if start := serializer.validated_data.get("start"):
-            overlapping_order = overlapping_order.filter(
-                until__lt=start
-            )
-        print(overlapping_order)
+            overlapping_order = overlapping_order.filter(until__lt=start)
 
         if overlapping_order:
             return Response(

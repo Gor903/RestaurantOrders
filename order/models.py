@@ -3,6 +3,7 @@ from django.db import models
 import uuid
 from .choices import ORDER_STATUS
 
+
 class BaseModel(models.Model):
     """
     An abstract base model providing a UUID as the primary key.

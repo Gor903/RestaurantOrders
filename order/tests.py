@@ -17,8 +17,12 @@ class OrderTestCase(TestCase):
         This method creates two `Item` instances and associates them with an `Order`.
         The order is created with a table number of 1, and both items are added to the order.
         """
-        self.item1 = Item.objects.create(title="BBQ", description="Tasty meat", price=10.3)
-        self.item2 = Item.objects.create(title="Juices", description="Fanta, Sprite", price=5.5)
+        self.item1 = Item.objects.create(
+            title="BBQ", description="Tasty meat", price=10.3
+        )
+        self.item2 = Item.objects.create(
+            title="Juices", description="Fanta, Sprite", price=5.5
+        )
 
         self.order = Order.objects.create(table_number=6)
         self.order.items.set([self.item1, self.item2])
