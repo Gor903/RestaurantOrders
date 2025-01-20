@@ -56,6 +56,7 @@ Go to http://localhost:8000/admin to access the Django admin panel. Log in with 
  - **Orders**: http://localhost:8000/orders/
  - **Create order**: http://localhost:8000/orders/
  - **Manage order**: http://localhost:8000/orders/{uuid}/
+ - **Report**: http://localhost:8000/report/
 
 ## You can find in swagger page:
  - Order create
