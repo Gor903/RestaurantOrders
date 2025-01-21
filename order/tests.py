@@ -1,6 +1,6 @@
 from django.test import TestCase
 from .models import Item, Order
-
+from datetime import datetime
 
 class OrderTestCase(TestCase):
     """
@@ -24,7 +24,11 @@ class OrderTestCase(TestCase):
             title="Juices", description="Fanta, Sprite", price=5.5
         )
 
-        self.order = Order.objects.create(table_number=6)
+        self.order = Order.objects.create(
+            table_number=6,
+            start=datetime.now(),
+            until=datetime.now()
+        )
         self.order.items.set([self.item1, self.item2])
 
     def test_order_creation(self):
